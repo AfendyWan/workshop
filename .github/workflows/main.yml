@@ -6,7 +6,6 @@ jobs:
   build:
     runs-on: [self-hosted, Windows, X64]
 
-    # 👇 This makes all run commands use classic Windows PowerShell
     defaults:
       run:
         shell: powershell
