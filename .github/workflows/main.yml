@@ -1,21 +1,17 @@
-name: Minimal Test
+name: Test Local Runner
 
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: [self-hosted, Windows, X64]
 
     defaults:
       run:
-        shell: powershell
+        shell: powershell   # ensures it runs on your Windows PowerShell
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build test image
-        run: docker build . -t test:latest
-
-      - name: List images
-        run: docker images
+      - name: Print message
+        run: |
+          Write-Host "🎉 Hello from my local Windows runner!"
+          Get-Date
