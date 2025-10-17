@@ -5,12 +5,18 @@ on: [push]
 jobs:
   build:
     runs-on: [self-hosted, Windows, X64]
+
+    # 👇 This makes all run commands use classic Windows PowerShell
     defaults:
       run:
-        shell: pwsh
+        shell: powershell
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Build test image
         run: docker build . -t test:latest
+
       - name: List images
         run: docker images
