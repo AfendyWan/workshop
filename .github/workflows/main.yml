@@ -1,48 +1,16 @@
-name: Docker Image CI (Windows Runner)
+name: Minimal Test
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+on: [push]
 
 jobs:
   build:
-    runs-on: [self-hosted, Windows]
-
+    runs-on: [self-hosted, Windows, X64]
+    defaults:
+      run:
+        shell: pwsh
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Step 2: Build lightweight multi-stage Docker image
-      - name: Build lightweight Docker image
-        id: build-image
-        shell: pwsh
-        run: |
-          $IMAGE_NAME = "my-lightweight-app"
-          $TAG = [int][double]::Parse((Get-Date -UFormat %s))
-          docker build . -f Dockerfile -t "$IMAGE_NAME`:$TAG"
-          echo "IMAGE_NAME=$IMAGE_NAME" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "TAG=$TAG" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "✅ Built image $IMAGE_NAME:$TAG"
-
-      # Step 3: Run Trivy vulnerability scanner (Windows-compatible)
-      - name: Run Trivy vulnerability scanner
-        shell: pwsh
-        run: |
-          trivy image "$env:IMAGE_NAME`:$env:TAG" --severity CRITICAL,HIGH --ignore-unfixed --exit-code 0 --format table
-
-      # Step 4: Show image size
-      - name: Show image size
-        shell: pwsh
-        run: docker images "$env:IMAGE_NAME`:$env:TAG"
-
-      # Step 5: Clean up Docker cache
-      - name: Cleanup Docker cache
-        if: always()
-        shell: pwsh
-        run: |
-          echo "🧹 Cleaning up Docker..."
-          docker system prune -af --volumes
-          echo "✅ Cleanup complete!"
+      - uses: actions/checkout@v4
+      - name: Build test image
+        run: docker build . -t test:latest
+      - name: List images
+        run: docker images
